@@ -11,26 +11,34 @@ package cn.ac.iie.cls.agent.subThread.bdap;
  */
 import cn.ac.iie.cls.agent.po.FileMessage;
 import cn.ac.iie.cls.agent.slave.datacollect.CLSAgentBDAPHandler;
-import cn.ac.iie.cls.agent.tools.DatabaseTools;
+//import cn.ac.iie.cls.agent.tools.DatabaseTools;
 import org.apache.log4j.Logger;
+import cn.ac.iie.cls.agent.tools.DatabaseToolsBDAP;
+import java.sql.Connection;
 
 public class SubSQLQueryThreadBDAP implements Runnable{
     private static Logger logger = Logger.getLogger(SubSQLQueryThreadBDAP.class);
     private String sql = "";
     private String localPath = "";
     private String instance = "";
-    private String name = "";
-    private static String database_type = "oracle";
-    private static String url = "192.168.11.98";
-    private static int port = 1521;
-    private static String username = "tdrq";
-    private static String password = "tdrq";
+    private String data_type = "";
+    //private static String database_type = "oracle";
+    private  String url = "";
+    private  int port = -1;
+    private  String username = "";
+    private  String password = "";
     
-    public SubSQLQueryThreadBDAP(String name,String localPath, String sql, String instance) {
-        this.name = name;
+    public SubSQLQueryThreadBDAP(String data_type, String localPath, String sql, String instance, 
+            String url, int port, String username, String password) {
+        this.data_type = data_type;
         this.localPath = localPath;
         this.sql = sql;
         this.instance = instance;
+        this.url = url;
+        this.port = port;
+        this.username = username;
+        this.password = password;
+        
         //this.database_type = database_type;
     }
     
@@ -47,19 +55,30 @@ public class SubSQLQueryThreadBDAP implements Runnable{
             logger.debug("sqlQuery is starting!");
             boolean connFlag = false;
             //DatabaseTools databaseQuery = new DatabaseTools();
-            connFlag = DatabaseTools.downFile(name, url, port, username, password, localPath, sql, instance, database_type);
-            if (connFlag == false) {
-                System.out.print("connflag=" + connFlag);
-                logger.error(" run SQLQuery is fail!");
+            //connFlag = DatabaseTools.downFile(name, url, port, username, password, localPath, sql, instance, database_type);
+            DatabaseToolsBDAP.init(url, port, password);
+            Connection conn = DatabaseToolsBDAP.getLbConnection(instance, username);
+            if (conn == null) {
+                logger.error(" Database Connection is fail!");
                 FileMessage efm = new FileMessage();
-                efm.setMessage("run SQLQuery is fail!");
-//                CLSAgentBDAPHandler.errFileList.add(efm);
+                efm.setMessage("Database Connection is fail!");
+                CLSAgentBDAPHandler.errFileList.add(efm);
             }
             else {
-                logger.info("run SQLQuery is success!");
-                FileMessage efm = new FileMessage();
-                efm.setMessage("run SQLQuery is success!");
-                CLSAgentBDAPHandler.errFileList.add(efm);
+                connFlag = DatabaseToolsBDAP.query(data_type, sql, localPath, conn);
+                if (connFlag == false) {
+                //System.out.print("connflag=" + connFlag);
+                    logger.error(" run SQLQuery is fail!");
+                    FileMessage efm = new FileMessage();
+                    efm.setMessage("run SQLQuery is fail!");
+                    //CLSAgentBDAPHandler.errFileList.add(efm);
+                }
+                else {
+                    logger.info("run SQLQuery is success!");
+                    FileMessage efm = new FileMessage();
+                    efm.setMessage("run SQLQuery is success!");
+                //CLSAgentBDAPHandler.errFileList.add(efm);
+                }
             }
         }
     }

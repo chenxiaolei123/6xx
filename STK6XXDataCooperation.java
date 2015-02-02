@@ -1,4 +1,3 @@
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -15,7 +14,6 @@ import cn.ac.iie.cls.agent.slave.datacollect.CLSAgentBDAPHandler;
 import cn.ac.iie.cls.agent.subThread.bdap.*;
 import cn.ac.iie.cls.agent.tools.DateTools;
 import cn.ac.iie.cls.agent.tools.XmlTools;
-import cn.ac.iie.cls.agent.tools.PropsFiles;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +58,10 @@ public class STK6XXDataCooperation {
         String localPath = "";
         String sql = "";
         String instance = "";//database name;
+        String url = "";
+        int  port = -1;
+        String username = "";
+        String password = "";
         //String database_type = "";
         String hdfsPath = "";//集群路径
         String operator_id = "";//操作id
@@ -68,16 +70,21 @@ public class STK6XXDataCooperation {
         String dstName = "";
         
         try {
-            localPath = PropsFiles.getValue("resultFilePath") + File.separator + dataType; //the master's props;
-            //localPath = "/home/apple";
+            //localPath = PropsFiles.getValue("resultFilePath") + File.separator + dataType; //the master's props;
+            localPath = "/home/apple";
             sql = XmlTools.getValueFromStrDGText(xml, "sql");
             instance = XmlTools.getValueFromStrDGText(xml, "instance");
+            url = XmlTools.getValueFromStrDGText(xml, "url");
+            port = Integer.parseInt(XmlTools.getValueFromStrDGText(xml, "port"));
+            username = XmlTools.getValueFromStrDGText(xml, "username");
+            password = XmlTools.getValueFromStrDGText(xml, "password");
             //database_type = XmlTools.getValueFromStrDGText(xml, "database_type");
             hdfsPath = XmlTools.getValueFromStrDGText(xml, "hdfsPath");
             operator_id = XmlTools.getOperatorAttribute(xml, "name");            
             processjobinstanceId = XmlTools.getElValueFromStr(xml, "processJobInstanceId");
             type = XmlTools.getOperatorAttribute(xml, "class");
             dstName = XmlTools.getValueFromStrDGText(xml, "dstName");
+            
             
         } catch (Exception ex) {
             logger.error(dataType + "read xml err! and add to errFileList." + ex, ex);
@@ -107,7 +114,7 @@ public class STK6XXDataCooperation {
         String sdate = sdf.format(dates);//date format;
         
         logger.info(processjobinstanceId + " sqlQueryThreadt process start: " + sdate);
-        SubSQLQueryThreadBDAP sqlQueryThreadBDAP = new SubSQLQueryThreadBDAP(dataType, localPath, sql, instance);
+        SubSQLQueryThreadBDAP sqlQueryThreadBDAP = new SubSQLQueryThreadBDAP(dataType, localPath, sql, instance, url, port, username, password);
         Thread sqlQueryThread = new Thread(sqlQueryThreadBDAP);
         try {
             sqlQueryThread.start();
@@ -201,7 +208,7 @@ public class STK6XXDataCooperation {
             logger.info(processjobinstanceId + "the upSQLResult success!");
             FileMessage efm = new FileMessage();
             efm.setMessage(processjobinstanceId + "the upSQLResult success!");
-            CLSAgentBDAPHandler.errFileList.add(efm);
+            CLSAgentBDAPHandler.succFileList.add(efm);
             return true;
         }
     }

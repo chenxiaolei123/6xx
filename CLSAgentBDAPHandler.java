@@ -76,7 +76,7 @@ public class CLSAgentBDAPHandler implements SlaveHandler {
 
             String type = "";
             type = XmlTools.getOperatorAttribute(xml, "class");//operator shuxing
-
+            System.out.print(type + dataType);
             processjobinstanceId = XmlTools.getElValueFromStr(xml, "processJobInstanceId");
 
             if (type.equals("") || dataType.equals("") || xml.equals("")) {
@@ -145,7 +145,6 @@ public class CLSAgentBDAPHandler implements SlaveHandler {
                 }
                 logger.info("GetherDataFrom7XXPutXML is end!");
             } else if (type.equals("GM.E.CoAgent6")) {//6XX数据接入
-
                 errFileList = new LinkedBlockingQueue<FileMessage>();
                 allFileList = new LinkedBlockingQueue<FileMessage>();
                 succFileList = new LinkedBlockingQueue<FileMessage>();
@@ -153,7 +152,7 @@ public class CLSAgentBDAPHandler implements SlaveHandler {
                 logger.info(processjobinstanceId + "\tGM.E.CoAgent6 is start!");
                 try {
                     logger.info(processjobinstanceId + " " + dataType + " starting!");
-
+                    
                     STK6XXDataCooperation sdc = new STK6XXDataCooperation(dataType, xml);
                     boolean reFlag = sdc.execute();
                     if (reFlag) {
