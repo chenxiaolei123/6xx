@@ -48,7 +48,7 @@ public class DatabaseToolsBDAP {
         return lbConn;
     }
     /** query the sql and create a local file to store the result*/
-    public static boolean query(String data_type, String sql, String localPath, Connection conn){
+    public static boolean query(String data_type, String sql, String localPath, String dstName, Connection conn){
         PreparedStatement ps = null;
         ResultSet rs = null;
         boolean connFlag = true;
@@ -60,7 +60,7 @@ public class DatabaseToolsBDAP {
             //create a local path
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mmss");
             String times = sdf.format(new Date());
-            String path = localPath + File.separator + data_type + times +Math.random()+  ".txt";
+            String path = localPath + File.separator + data_type + "_" + times + "_" + dstName+  ".txt";
             
             //create a local file to store the result
             File file = new File(localPath);

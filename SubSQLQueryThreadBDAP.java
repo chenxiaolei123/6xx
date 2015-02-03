@@ -27,10 +27,12 @@ public class SubSQLQueryThreadBDAP implements Runnable{
     private  int port = -1;
     private  String username = "";
     private  String password = "";
+    private  String dstName = "";
     
-    public SubSQLQueryThreadBDAP(String data_type, String localPath, String sql, String instance, 
+    public SubSQLQueryThreadBDAP(String data_type, String dstName, String localPath, String sql, String instance, 
             String url, int port, String username, String password) {
         this.data_type = data_type;
+        this.dstName = dstName;
         this.localPath = localPath;
         this.sql = sql;
         this.instance = instance;
@@ -65,7 +67,7 @@ public class SubSQLQueryThreadBDAP implements Runnable{
                 CLSAgentBDAPHandler.errFileList.add(efm);
             }
             else {
-                connFlag = DatabaseToolsBDAP.query(data_type, sql, localPath, conn);
+                connFlag = DatabaseToolsBDAP.query(data_type, sql, localPath, dstName, conn);
                 if (connFlag == false) {
                 //System.out.print("connflag=" + connFlag);
                     logger.error(" run SQLQuery is fail!");

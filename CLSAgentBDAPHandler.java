@@ -76,7 +76,6 @@ public class CLSAgentBDAPHandler implements SlaveHandler {
 
             String type = "";
             type = XmlTools.getOperatorAttribute(xml, "class");//operator shuxing
-            System.out.print(type + dataType);
             processjobinstanceId = XmlTools.getElValueFromStr(xml, "processJobInstanceId");
 
             if (type.equals("") || dataType.equals("") || xml.equals("")) {

@@ -114,7 +114,7 @@ public class STK6XXDataCooperation {
         String sdate = sdf.format(dates);//date format;
         
         logger.info(processjobinstanceId + " sqlQueryThreadt process start: " + sdate);
-        SubSQLQueryThreadBDAP sqlQueryThreadBDAP = new SubSQLQueryThreadBDAP(dataType, localPath, sql, instance, url, port, username, password);
+        SubSQLQueryThreadBDAP sqlQueryThreadBDAP = new SubSQLQueryThreadBDAP(dataType, dstName, localPath, sql, instance, url, port, username, password);
         Thread sqlQueryThread = new Thread(sqlQueryThreadBDAP);
         try {
             sqlQueryThread.start();
